@@ -1,7 +1,18 @@
 import cv2
 import numpy as np
 import math
+import pygame
 
+#sound init
+pygame.init()
+pygame.display.set_caption("audio test")
+
+hz300 = pygame.mixer.Sound("300Hz.MP3")
+hz1200 = pygame.mixer.Sound("1200Hz.MP3")
+hz300.play()
+hz1200.play()
+hz1200.set_volume(0)
+hz300.set_volume(0)
 
 #vector should like the following way : [x0,y0,x1,y1]
 
@@ -66,18 +77,20 @@ while video.isOpened():
 
 				#calculating the angle between the detected lines and the middle vertical line
 				angle_value = line_angle(middle_vertical_line,line[0])
-			
-					if angle_value < 1 :
+				if angle_value < 1 :
 					if angle_value > 0.6 :
 						print("SHARP LEFT")
+						hz300.set_volume(1),hz1200.set_volume(0)
 					else :
 						print ("LEFT")
+						hz300.set_volume(0.5),hz1200.set_volume(0)
 				if angle_value > 1 :
 					if angle_value > 3 :
 						print("SHARP RIGHT")
+						hz1200.set_volume(1),hz300.set_volume(0)
 					else :
 						print ("RIGHT")
-
+						hz1200.set_volume(0.5),hz300.set_volume(0)
 			cv2.imshow('processed frame',gray_frame)
 		except :
 			print("no lines detected in frame !!!") 
