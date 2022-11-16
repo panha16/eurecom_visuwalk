@@ -14,7 +14,8 @@ import cv2
 # 		stream.truncate()
 # 		
 
-from webcamvideostream import webcamvideostream
+# from webcamvideostream import webcamvideostream
+
 class VideoStream:
 	def __init__(self,src = 0,resolution = (1640,1232),framerate = 30):
 		from pivideostream import PiVideoStream
@@ -34,7 +35,7 @@ class VideoStream:
 
 	def stop(self):
 		self.stream.stop()
-		
+
 
 vs = VideoStream(usePicamera = True).start()
 time.sleep(2.0)
