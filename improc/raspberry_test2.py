@@ -1,10 +1,14 @@
 from picamera.array import PiRGBArray
-from picamera import picamera
+from picamera import PiCamera
+import numpy as np
 import time
 import cv2
+import io
 
 camera = PiCamera()
 camera.resolution = (640,480)
+width=480
+height=640
 camera.framerate = 30
 rawCapture = PiRGBArray(camera,size = (640,480))
 
@@ -12,14 +16,9 @@ rawCapture = PiRGBArray(camera,size = (640,480))
 time.sleep(0.1)
 
 for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port = True):
-
-	key = cv2.WaitKey() & 0xFF
-	if key == ord('q'):
-		break
-
 	frame = frame.array
 	upper_frame = frame[0:int(width/2),:]		#cropping the frame to only the upper-part
-	middle_vertical_line =[int(width/2),0,int(width/2),2000]
+	middle_vertical_line =[int(width/2),0,int(width/2),height]
 
 	#converting each video frame to gray
 	gray_frame = cv2.cvtColor(upper_frame,cv2.COLOR_BGR2GRAY)
@@ -51,9 +50,10 @@ for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port 
 
 		cv2.imshow('processed frame',gray_frame)
 		#clear the stream in preparation for the next frame
-		rawCapture.truncate()
+		rawCapture.truncate(0)
 
 	except :
 		print("no lines detected in frame !!!") 
+		rawCapture.truncate(0)
 
 

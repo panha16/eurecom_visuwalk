@@ -67,7 +67,7 @@ while video.isOpened():
 				#calculating the angle between the detected lines and the middle vertical line
 				angle_value = line_angle(middle_vertical_line,line[0])
 			
-					if angle_value < 1 :
+				if angle_value < 1 :
 					if angle_value > 0.6 :
 						print("SHARP LEFT")
 					else :
