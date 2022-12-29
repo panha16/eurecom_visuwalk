@@ -1,0 +1,67 @@
+\documentclass{article}
+\usepackage[a1paper]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{background}
+\usepackage{blindtext}
+\usepackage{eso-pic}
+\usepackage{tikz}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{ae}
+\usepackage{xstring}
+\usepackage{etoolbox}
+\usepackage{xkeyval}
+\usepackage{multicol}
+\usepackage{geometry}
+\usepackage{graphicx}
+\graphicspath{{./images/}}
+
+
+\geometry{left = 20mm,right = 10mm}
+
+ \backgroundsetup{scale = 1,angle = 0,opacity = 1,
+    contents = {\includegraphics[width = \paperwidth,
+    height = \paperheight]
+    {poster-template.pdf}}}
+
+\title{testvisuwalk}
+\author{Hamza Parnica, Lou Marze, Alexandre Avy, Hichem Khettab, Guillaume Ung}
+\date{December 2022}
+
+\begin{document}
+
+\begin{multicols}{2}
+
+\begin{center} \Huge Abstract
+\end{center}
+\LARGE
+Medical aid for visually impaired people are numerous and come in various types, from a simple white cane to wearable haptic bracelets.
+The goal of this project is to develop one of these medical aid, with the  following goal :
+a visually impaired person must be able follow a curved line on the ground.
+Using a Raspberry Pi 4 and its camera module, one has to : \\
+- Process the video containing the line \\
+- Send audio feedback to the user, guiding his walk
+
+
+
+\begin{center} \Huge Video / Image Processing
+\end{center}
+\LARGE
+Video processing is image processing but multiple times per second (equals to the video framerate, e.g 30 frames per second, most commonly), which is why we will talk about image processing techniques. \\ 
+
+\begin{figure}[h]
+\centering
+\includegraphics[height=5cm,width=5cm]{images/gilbert1.png}
+\end{figure}
+
+In order to process a line, multiple methods are available, such as convolution or the Hough transform for instance. Here, we decided to use the latter as it produced better lines and is easier than convolution. \\
+Prior to applying a Hough transform, the image was converted to gray and applied a Canny edge detector to simplify this Hough transform. \\
+Once all these steps are done, we can think about how to use these lines to guide the user.
+
+\LARGE \blindtext\blindtext
+\blindtext\blindtext
+
+
+\end{multicols}
+
+\end{document}
