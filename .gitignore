@@ -1,1 +1,8 @@
 case/*.png
+case/*.step
+case/*.stl
+
+poster_draft/*.aux
+poster_draft/*.log
+poster_draft/*.pdf
+!poster_draft/poster_template.pdf

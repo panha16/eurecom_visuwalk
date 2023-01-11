@@ -1,9 +1,11 @@
 width = 70;
-depth = 70;
-height = 90;
+depth = 55;
+height = 95;
 camera_orientation = 25; // camera angle orientation in degrees
 
-base_depth = 30;
+screw_d = 4; // screw hole diameter
+
+base_depth = 25;
 hole_height = tan(camera_orientation)*(depth-base_depth);
 echo("Hole height", hole_height);
 
@@ -38,16 +40,16 @@ module logo1() {
 
 module logo2() {
     module txt(){text("visuwalk", size=0.1*width,font="URW Gothic:style=Demi");}
+    translate([0.78*width,depth,hole_height+10])
     rotate([90,0,180])
-    translate([-0.95*width,hole_height+5,depth])
     linear_extrude(10,center=true)
     txt();
 }
 
 module braille() {
     module txt(){text("⠧⠊⠎⠥⠺⠁⠇⠅", size=0.07*width,font="Braille");}
+    translate([0.55*width,depth,height-10])
     rotate([90,0,180])
-    translate([-0.55*width,height-10,depth])
     linear_extrude(1,center=true)
     txt();
 }
@@ -58,6 +60,7 @@ module case() {
             base();
             logo1();
             logo2();
+            translate([-1,2,height-1]) cube([width+2,10,2]);
         }
         braille();
     }
