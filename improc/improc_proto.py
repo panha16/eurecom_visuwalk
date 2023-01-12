@@ -40,7 +40,7 @@ if(type(lines) is np.ndarray):
         x0,y0,x1,y1 = line[0]				#retrieving lines start and end coordinates
         if y0>y1:
             y0,y1 = y1,y0                   # rearrange lines for orientation calculation
-            x0,x1 = x1,x0
+            x0,x1 = x1,x0                   # -> orienting vector downward
 
         if y0<y1:
             cv2.line(gray_frame,(x0,y0),(x1,y1),(0,0,0),3)				#drawing the lines on the frame
