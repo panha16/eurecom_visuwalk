@@ -1,42 +1,13 @@
 import numpy as np
 import time
 import cv2
-import io
 import math
 
 
 
-#vector should like the following way : [x0,y0,x1,y1]
-
-#defining scalar product function
-def dot(vector_a,vector_b):
-	return vector_a[0]*vector_b[0] + vector_a[1]*vector_b[1]
-
-#defining a function to calculate the angle between two vectors using a.b = |a||b|cos angle
-
-def line_angle(vecA,vecB):
-    vA = [(vecA[2] - vecA[0]),(vecA[3] - vecA[1])]
-    vB = [(vecB[2] - vecB[0]),(vecB[3] - vecB[1])]
-    dot_product = dot(vA,vB)
-    magA = dot(vA,vA) ** 0.5 #magA = |a|
-    magB = dot(vB,vB) ** 0.5 #magB = |b|
-    angle_cosine = dot_product/(magA*magB)
-
-    determinant = (vA[0]*vB[1] - vA[1]*vB[0])
-    direction = determinant/abs(determinant) if determinant != 0 else 1
-    print(direction)
-    #direction = vB[1]/abs(vB[1])
-    
-    angle = direction*math.acos(angle_cosine)
-    angle = angle*180/math.pi
-    return angle
-
-
-
 #converting each video frame to gray
-# in imread, the first variable (x) is the descendant vertical axis
-# the second variable is the right-leaning horizontal axis
-# the rest is inverted
+# in imread, the first variable (y) is the descendant vertical axis
+# the second variable (x) is the right-leaning horizontal axis
 gray_frame = cv2.imread("samples/reel3.jpg",cv2.IMREAD_GRAYSCALE)
 
 # applying bilateral filter because of the pattern of the carpet:
@@ -65,6 +36,7 @@ cv2.line(gray_frame,(int(width/2),0), (int(width/2), height),(255,0,0),5)
 if(type(lines) is np.ndarray):
     for line in lines:
 
+        # x axis is horizontal right-leaning, y axis is vertical descendant
         x0,y0,x1,y1 = line[0]				#retrieving lines start and end coordinates
         if y0>y1:
             y0,y1 = y1,y0                   # rearrange lines for orientation calculation
@@ -77,12 +49,10 @@ if(type(lines) is np.ndarray):
 
 
         #calculating the angle between the detected lines and the middle vertical line
-        #angle_value = line_angle(middle_vertical_line,line[0])
-
         y = y1-y0
         x = x1-x0
         mag = math.sqrt(x**2 + y**2)
-        cos_val = y/mag
+        cos_val = y/mag             # it is the cosine if we consider the y descendant axis as the reference
         angle_val = math.acos(cos_val)
         direction = x/abs(x) if x != 0 else 1
         angle_val = direction*angle_val
