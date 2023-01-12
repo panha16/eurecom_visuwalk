@@ -6,9 +6,6 @@ import math
 
 
 
-width=480
-height=640
-
 #vector should like the following way : [x0,y0,x1,y1]
 
 #defining scalar product function
@@ -35,9 +32,13 @@ def line_angle(vecA,vecB):
 
 
 #converting each video frame to gray
-gray_frame = cv2.imread("samples/reel2.jpg",cv2.IMREAD_GRAYSCALE)
+gray_frame = cv2.imread("samples/reel3.jpg",cv2.IMREAD_GRAYSCALE)
 
-# gray_frame = gray_frame[0:int(width/2),:]		#cropping the frame to only the upper-part
+# applying bilateral filter because of the pattern of the carpet:
+# blurring noise while keeping edges sharp
+#cv2.imshow('before',gray_frame)
+gray_frame = cv2.bilateralFilter(gray_frame, 9, 75, 75)
+#cv2.imshow('after', gray_frame)
 
 height,width = gray_frame.shape[0],gray_frame.shape[1]
 
@@ -45,6 +46,8 @@ middle_vertical_line =[int(width/2),0,int(width/2),height]
 
 #using canny edge detection and hough transform to detect edges and lines
 edges = cv2.Canny(gray_frame,50,200)
+cv2.imshow('edges', edges)
+
 #drawing the lines
 lines = cv2.HoughLinesP(edges,20,np.pi/180,200,20)
 
@@ -53,7 +56,7 @@ try :
 
         x0,y0,x1,y1 = line[0]				#retrieving lines start and end coordinates
 
-        cv2.line(gray_frame,(x0,y0),(x1,y1),(255,0,0),3)				#drawing the lines on the frame
+        cv2.line(gray_frame,(x0,y0),(x1,y1),[255,0,0],3)				#drawing the lines on the frame
 
         #calculating the angle between the detected lines and the middle vertical line
         angle_value = line_angle(middle_vertical_line,line[0])
