@@ -22,9 +22,10 @@ def line_angle(vecA,vecB):
     magB = dot(vB,vB) ** 0.5 #magB = |b|
     angle_cosine = dot_product/(magA*magB)
 
-    determinant = (vA[0]*vB[1] - vA[1]*vB[0])
+    '''determinant = (vA[0]*vB[1] - vA[1]*vB[0])
     direction = determinant/abs(determinant) if determinant != 0 else 1
-    print(direction)
+    print(direction)'''
+    direction = vB[1]/abs(vB[1])
     
     angle = direction*math.acos(angle_cosine)
     angle = angle*180/math.pi
@@ -55,6 +56,7 @@ cv2.imshow('edges', edges)
 #drawing the lines
 lines = cv2.HoughLinesP(edges,rho=20,theta=np.pi/45,threshold=30,minLineLength=4)
 
+cv2.line(gray_frame,(int(width/2),0), (int(width/2), height),(255,0,0),5)
 try : 
     for line in lines:
 
@@ -62,10 +64,12 @@ try :
         '''if y0>y1:
             y0,y1 = y1,y0                   # rearrange lines for orientation calculation
             x0,x1 = x1,x0'''
-        print(x0,x1,y0,y1)
 
-        cv2.line(gray_frame,(x0,y0),(x1,y1),(0,0,0),3)				#drawing the lines on the frame
-        cv2.line(gray_frame,(int(width/2),0), (int(width/2), height),(255,0,0),5)
+        if y0<y1:
+            cv2.line(gray_frame,(x0,y0),(x1,y1),(0,0,0),3)				#drawing the lines on the frame
+        else:
+            cv2.line(gray_frame,(x0,y0),(x1,y1),(255,0,0),3)				#drawing the lines on the frame
+
 
         #calculating the angle between the detected lines and the middle vertical line
         angle_value = line_angle(middle_vertical_line,line[0])
