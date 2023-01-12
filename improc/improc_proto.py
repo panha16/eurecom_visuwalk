@@ -22,10 +22,10 @@ def line_angle(vecA,vecB):
     magB = dot(vB,vB) ** 0.5 #magB = |b|
     angle_cosine = dot_product/(magA*magB)
 
-    '''determinant = (vA[0]*vB[1] - vA[1]*vB[0])
+    determinant = (vA[0]*vB[1] - vA[1]*vB[0])
     direction = determinant/abs(determinant) if determinant != 0 else 1
-    print(direction)'''
-    direction = vB[1]/abs(vB[1])
+    print(direction)
+    #direction = vB[1]/abs(vB[1])
     
     angle = direction*math.acos(angle_cosine)
     angle = angle*180/math.pi
@@ -47,6 +47,9 @@ gray_frame = cv2.bilateralFilter(gray_frame, 9, 75, 75)
 
 height,width = gray_frame.shape[0],gray_frame.shape[1]
 
+#gray_frame = gray_frame[int(height/2):,int(width/2):]
+#gray_frame = gray_frame[:int(height/2),:]
+
 middle_vertical_line =[int(width/2), 0, int(width/2), height]
 
 #using canny edge detection and hough transform to detect edges and lines
@@ -57,13 +60,15 @@ cv2.imshow('edges', edges)
 lines = cv2.HoughLinesP(edges,rho=20,theta=np.pi/45,threshold=30,minLineLength=4)
 
 cv2.line(gray_frame,(int(width/2),0), (int(width/2), height),(255,0,0),5)
-try : 
+
+
+if(type(lines) is np.ndarray):
     for line in lines:
 
         x0,y0,x1,y1 = line[0]				#retrieving lines start and end coordinates
-        '''if y0>y1:
+        if y0>y1:
             y0,y1 = y1,y0                   # rearrange lines for orientation calculation
-            x0,x1 = x1,x0'''
+            x0,x1 = x1,x0
 
         if y0<y1:
             cv2.line(gray_frame,(x0,y0),(x1,y1),(0,0,0),3)				#drawing the lines on the frame
@@ -72,12 +77,20 @@ try :
 
 
         #calculating the angle between the detected lines and the middle vertical line
-        angle_value = line_angle(middle_vertical_line,line[0])
+        #angle_value = line_angle(middle_vertical_line,line[0])
 
-        print(angle_value)
-    
+        y = y1-y0
+        x = x1-x0
+        mag = math.sqrt(x**2 + y**2)
+        cos_val = y/mag
+        angle_val = math.acos(cos_val)
+        direction = x/abs(x) if x != 0 else 1
+        angle_val = direction*angle_val
+        angle_val = angle_val*180/np.pi
 
-except :
+        print(angle_val)
+
+else:
     print("no lines detected in frame !!!") 
 
 cv2.imshow('processed frame',gray_frame)
