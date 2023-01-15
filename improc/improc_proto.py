@@ -4,6 +4,51 @@ import cv2
 import math
 
 
+class NoLineBottom(Exception):
+    pass
+
+def get_barycentre(image, start_y, end_y):
+    ''' Computes the barycentre of white points
+    in a given y range for a BW image '''
+    y_avg = 0
+    x_avg = 0
+    n = 0
+
+    for y in range(start_y, end_y):
+        for x in range(0, len(image[0])):
+            if(image[y,x] == 255):
+                y_avg += y
+                x_avg += x
+                n += 1
+
+    if(n != 0):
+        y_avg /= n
+        x_avg /= n
+
+        return (int(y_avg), int(x_avg))
+    else:
+        raise NoLineBottom
+
+
+def get_angle_vertical(y,x):
+    ''' Computes the oriented angle of a vector
+    with the y axis (vertical line on the image)'''
+    mag = math.sqrt(x**2 + y**2)
+    cos_val = y/mag
+    angle_val = math.acos(cos_val)
+    direction = x/abs(x) if x != 0 else 1
+    angle_val = direction*angle_val
+    angle_val = angle_val*180/np.pi
+    return angle_val
+
+
+def get_distance_middle(image, start_y, end_y):
+    ''' Computes the distance between the middle
+    of the image and the line on a given y range'''
+    y,point = get_barycentre(image, start_y, end_y)
+    width = len(image[0])
+    return abs(point-width/2)
+
 
 # converting each video frame to gray
 # in imread, the first variable (y) is the descendant vertical axis
@@ -18,19 +63,20 @@ gray_frame = cv2.bilateralFilter(gray_frame, 9, 75, 75)
 
 height,width = gray_frame.shape[0],gray_frame.shape[1]
 
-# gray_frame = gray_frame[int(height/2):,int(width/2):]
+# gray_frame = gray_frame[int(height/2):,:]
 # gray_frame = gray_frame[:int(height/2),:]
 
-middle_vertical_line =[int(width/2), 0, int(width/2), height]
+middle_vertical_line =[int(width/2), 0, int(width/2), height] # used for debug purposes only
 
 # using canny edge detection and hough transform to detect edges and lines
 edges = cv2.Canny(gray_frame,50,200)
-cv2.imshow('edges', edges)
 
-# detecting the lines
-lines = cv2.HoughLinesP(edges,rho=20,theta=np.pi/45,threshold=30,minLineLength=4)
+# detecting the lines for the half-bottom part of the image
+lines = cv2.HoughLinesP(edges[int(height/2):,:],rho=20,theta=np.pi/45,threshold=30,minLineLength=4)
 
 cv2.line(gray_frame,(int(width/2),0), (int(width/2), height),(255,0,0),5)
+
+alpha = 0 # alpha angle (cf. documentation)
 
 
 if(type(lines) is np.ndarray):
@@ -42,27 +88,40 @@ if(type(lines) is np.ndarray):
             y0,y1 = y1,y0                   # rearrange lines for orientation calculation
             x0,x1 = x1,x0                   # -> orienting vector downward
 
-        if y0<y1:
-            cv2.line(gray_frame,(x0,y0),(x1,y1),(0,0,0),3)				#drawing the lines on the frame
-        else:
-            cv2.line(gray_frame,(x0,y0),(x1,y1),(255,0,0),3)				#drawing the lines on the frame
+        cv2.line(gray_frame,(x0,y0+int(height/2)),(x1,y1+int(height/2)),(0,0,0),3)	#drawing the lines on the frame
 
-
-        #calculating the angle between the detected lines and the middle vertical line
         y = y1-y0
         x = x1-x0
-        mag = math.sqrt(x**2 + y**2)
-        cos_val = y/mag             # it is the cosine if we consider the y descendant axis as the reference
-        angle_val = math.acos(cos_val)
-        direction = x/abs(x) if x != 0 else 1
-        angle_val = direction*angle_val
-        angle_val = angle_val*180/np.pi
+        alpha += get_angle_vertical(y,x)
 
-        print(angle_val)
+    alpha /= len(lines)
+    alpha = alpha if abs(alpha) <= 70 else 70*(alpha/abs(alpha))
+    print("alpha = ", alpha)
 
 else:
     print("no lines detected in frame !!!") 
+    alpha = 100     # value out of the bounds, to notify that no angle was detected
 
+
+try:
+    d = get_distance_middle(edges, int(4*height/5), height)
+except NoLineBottom:
+    d = get_distance_middle(edges, 0, height)
+
+print("f(d) = ", (1 - math.exp(-6*d/width)))
+tp_y, tp_x = get_barycentre(edges, int(height/2), int(2*height/3))  # target point coordinates
+cv2.line(edges,(tp_x,tp_y),(tp_x,tp_y),(255,0,0),3)
+# transform coordinates into vector with tp as start point and bottom of middle vertical line
+# as end point
+tp_y = height - tp_y
+tp_x = int(width/2) - tp_x
+beta = get_angle_vertical(tp_y, tp_x)
+print("beta = ", beta)
+
+gamma = alpha + (1 - math.exp(-6*d/width))*(beta-alpha)
+print("gamma = ", gamma)
+
+cv2.imshow('edges', edges)
 cv2.imshow('processed frame',gray_frame)
 k = cv2.waitKey(0)
 exit()
