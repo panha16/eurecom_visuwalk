@@ -74,10 +74,13 @@ edges = cv2.Canny(gray_frame,50,200)
 # detecting the lines for the half-bottom part of the image
 lines = cv2.HoughLinesP(edges[int(height/2):,:],rho=20,theta=np.pi/45,threshold=30,minLineLength=4)
 
+# look through whole image if no line is detected
+if(type(lines) is not np.ndarray):
+    lines = cv2.HoughLinesP(edges,rho=20,theta=np.pi/45,threshold=30,minLineLength=4)
+
 cv2.line(gray_frame,(int(width/2),0), (int(width/2), height),(255,0,0),5)
 
 alpha = 0 # alpha angle (cf. documentation)
-
 
 if(type(lines) is np.ndarray):
     for line in lines:
@@ -106,11 +109,15 @@ else:
 try:
     d = get_distance_middle(edges, int(4*height/5), height)
 except NoLineBottom:
-    d = get_distance_middle(edges, 0, height)
-
+    d = get_distance_middle(edges, 0, height)   # look through whole image if no line detected in wanted bounds
 print("f(d) = ", (1 - math.exp(-6*d/width)))
-tp_y, tp_x = get_barycentre(edges, int(height/2), int(2*height/3))  # target point coordinates
+
+try:
+    tp_y, tp_x = get_barycentre(edges, int(height/2), int(2*height/3))  # target point coordinates
+except NoLineBottom:
+    tp_y, tp_x = get_barycentre(edges, 0, height)   # look through whole image if no line detected in wanted bounds
 cv2.line(edges,(tp_x,tp_y),(tp_x,tp_y),(255,0,0),3)
+
 # transform coordinates into vector with tp as start point and bottom of middle vertical line
 # as end point
 tp_y = height - tp_y
