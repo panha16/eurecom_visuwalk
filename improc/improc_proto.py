@@ -101,32 +101,32 @@ if(type(lines) is np.ndarray):
     alpha = alpha if abs(alpha) <= 70 else 70*(alpha/abs(alpha))
     print("alpha = ", alpha)
 
+    try:
+        d = get_distance_middle(edges, int(4*height/5), height)
+    except NoLineBottom:
+        d = get_distance_middle(edges, 0, height)   # look through whole image if no line detected in wanted bounds
+    print("f(d) = ", (1 - math.exp(-6*d/width)))
+
+    try:
+        tp_y, tp_x = get_barycentre(edges, int(height/2), int(2*height/3))  # target point coordinates
+    except NoLineBottom:
+        tp_y, tp_x = get_barycentre(edges, 0, height)   # look through whole image if no line detected in wanted bounds
+    cv2.line(edges,(tp_x,tp_y),(tp_x,tp_y),(255,0,0),3)
+
+    # transform coordinates into vector with tp as start point and bottom of middle vertical line
+    # as end point
+    tp_y = height - tp_y
+    tp_x = int(width/2) - tp_x
+    beta = get_angle_vertical(tp_y, tp_x)
+    print("beta = ", beta)
+
+    gamma = alpha + (1 - math.exp(-6*d/width))*(beta-alpha)
+    print("gamma = ", gamma)
+
 else:
     print("no lines detected in frame !!!") 
-    alpha = 100     # value out of the bounds, to notify that no angle was detected
+    gamma = 100     # value out of the bounds, to notify that no angle was detected
 
-
-try:
-    d = get_distance_middle(edges, int(4*height/5), height)
-except NoLineBottom:
-    d = get_distance_middle(edges, 0, height)   # look through whole image if no line detected in wanted bounds
-print("f(d) = ", (1 - math.exp(-6*d/width)))
-
-try:
-    tp_y, tp_x = get_barycentre(edges, int(height/2), int(2*height/3))  # target point coordinates
-except NoLineBottom:
-    tp_y, tp_x = get_barycentre(edges, 0, height)   # look through whole image if no line detected in wanted bounds
-cv2.line(edges,(tp_x,tp_y),(tp_x,tp_y),(255,0,0),3)
-
-# transform coordinates into vector with tp as start point and bottom of middle vertical line
-# as end point
-tp_y = height - tp_y
-tp_x = int(width/2) - tp_x
-beta = get_angle_vertical(tp_y, tp_x)
-print("beta = ", beta)
-
-gamma = alpha + (1 - math.exp(-6*d/width))*(beta-alpha)
-print("gamma = ", gamma)
 
 cv2.imshow('edges', edges)
 cv2.imshow('processed frame',gray_frame)
