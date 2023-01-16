@@ -7,6 +7,8 @@ import io
 import math
 
 
+from fifo import *
+
 
 class NoLineBottom(Exception):
     pass
@@ -61,6 +63,7 @@ camera.resolution = (height,width)
 camera.framerate = 30
 rawCapture = PiRGBArray(camera,size = (height,width))
 
+avg_gamma = create_queue(4)
 
 for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port = True):
     frame = frame.array
@@ -120,6 +123,9 @@ for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port 
 
         gamma = alpha + (1 - math.exp(-6*d/width))*(beta-alpha)
         print("gamma = ", gamma)
+
+        add_element(gamma, avg_gamma)
+        print("avg gamma = ", avg_queue(avg_gamma))
 
     else:
         print("no lines detected in frame !!!") 
