@@ -4,7 +4,7 @@
 \usepackage{amsmath}
 \graphicspath{{./poster\_images/}}
 \usepackage{xcolor}
-%\usepackage{textgreek}
+\usepackage{changepage}
 \definecolor{eurecomblue}{RGB}{0,159,227}
 \definecolor{visuwalkorange}{RGB}{255,204,0}
 
@@ -39,7 +39,7 @@ rounded corners=\blockroundedcorners] (blockbody.south west)
 rectangle (blockbody.north east);
 \ifBlockHasTitle
 \draw[color=eurecomblue, fill=eurecomblue
-, line width=2pt,  
+, line width=2pt
 rounded corners=\blockroundedcorners] (blocktitle.south west)
 rectangle (blocktitle.north east);
 \fi
@@ -50,21 +50,20 @@ rectangle (blocktitle.north east);
 \usetitlestyle{Empty}
 
 \usebackgroundstyle{eurecom}
+\title {\hspace{-40cm}Visuwalk}
 
-\title {Visuwalk}
-
-\titlegraphic{\includegraphics[width=0.20\paperwidth]{logo1.png}}
-\author{\large Alexandre Avy, Hichem Khettab, Lou Marze, Hamza Parnica, Guillaume Ung}
+\titlegraphic{\hspace{-40cm}\includegraphics[width=0.20\paperwidth]{logo1.png}}
+\author{\hspace{-40cm}\large Alexandre Avy, Hichem Khettab, Lou Marze, \\ \hspace{-40cm} Hamza Parnica, Guillaume Ung}
 \date{Semester 5}
 
 \begin{document}
+
 
 \useblockstyle{bestblockstyle}
 
 \maketitle[titletotopverticalspace=90mm,width = 0.5\paperwidth]
 
-
-\block[titleoffsety=30mm,bodyoffsety=38mm,bodyverticalshift=10mm,titleinnersep=5mm,bodyinnersep=4mm]{\textbf {Abstract}}{
+\block[titleoffsety=13cm,bodyoffsety=138mm,bodyverticalshift=10mm,titleinnersep=5mm,bodyinnersep=4mm,bodyoffsetx=80mm,bodywidthscale=.72,titlewidthscale=.4]{\textbf {Abstract}}{
 \Large
 % TODO: add phrase d'accroche on blind people et les besoins et la raison pour ce projet etc.
 The goal of this semester project is to guide ,with sounds, a visually impaired person to follow a line. \\
@@ -86,44 +85,57 @@ Find a way to communicate instructions to the user
 \end{center}
 
 \vspace{2mm}
+
+\begin{center}
+\includegraphics[height = 6cm, width = 6cm]{poster_images/reel3.jpg}
+\includegraphics[height = 6cm, width = 6cm]{poster_images/gray.jpg}
+\includegraphics[height = 6cm, width = 6cm]{poster_images/canny_edge.jpg}
+\includegraphics[height = 6cm, width = 6cm]{poster_images/houghlines_maybe.jpg}
+\caption{\emph{Original image/Filtered image/Canny edge detection/Lines from Hough transform}}
+% \centering\large Original image / Bilateral filter / Canny edge detection / Lines from Hough transform
+\end{center}
+
 Prior to detecting the line, the image is processed to optimize the detection quality through: \\
 - Bilateral filtering \\
 - Canny edge detection \\
 Then Hough transform is applied to detect straight lines in the edges image.
  
-\vspace{2mm}
-
-\begin{center}
-\includegraphics[height = 7cm, width = 6cm]{poster_images/reel3.jpg}
-\includegraphics[height = 7cm, width = 6cm]{poster_images/gray.jpg}
-\includegraphics[height = 7cm, width = 6cm]{poster_images/canny_edge.jpg}
-\includegraphics[height = 7cm, width = 6cm]{poster_images/houghlines_maybe.jpg}
-\end{center}
 
 % TODO: add caption, resize image and spacing
-\\
+\vspace{2mm}
 
 \begin{center} \LARGE {Computing the line direction}
 \end{center}
 
-The \(\alpha\) angle is defined as the average angle of the detected lines in
-the image with the Hough transform. We take only the bottom of the image into
-account, in order not to communicate a direction too early to the user and get
+\begin{center}
+\frame{\includegraphics[width=0.45\linewidth,height = 8cm]{poster_images/angle_alpha1.png}}
+\frame{\includegraphics[width=0.45\linewidth,height = 8cm]{poster_images/angle_alpha.png}}
+\centering
+\caption{\emph{Detected lines on bottom of the frame / Representation of the \(\alpha\) angle}}
+\end{center}
+The \(\alpha\) angle is defined as the average angle of the detected lines. We take only the bottom of the image into account, in order not to communicate a direction too early to the user and get
 out of the line.
 
-\begin{center}
-\includegraphics[width=0.45\linewidth]{poster_images/angle_alpha1.png}
-\includegraphics[width=0.45\linewidth]{poster_images/angle_alpha.png}
-\large l'angle beta wow
-\end{center}
 % TODO: add caption, resize image and spacing
+
+\begin{center} \LARGE {Taking the user position into account}
+\end{center}
+
+
+% \begin{center}
+% \hspace{-0.7\linewidth}
+% \includegraphics[width=0.2\linewidth]{poster_images/distance_bas_barycentre.png}
+% \end{center}
+
+% \begin{center}
+% \hspace{0.2\linewidth}
+% \vspace{90mm} \large dbneufnuizbnfueabfieja
+% \end{center}
 }
 
 \column{0.5}
 
 \block{}{
-\begin{center} \LARGE {Taking the user position into account}
-\end{center}
 
 Along with giving the line direction, it should also be taken into account that
 the user could deviate from the line and needs to get back to it quickly. \\
@@ -183,5 +195,5 @@ Finally, we have
 \block{\textbf{Sound Processing}}{}
 
 \end{columns}
-
+\block{\textbf{Conclusion}}{}
 \end{document}
