@@ -109,18 +109,40 @@ Then Hough transform is applied to detect straight lines in the edges image.
 \end{center}
 
 \begin{center}
-\frame{\includegraphics[width=0.45\linewidth,height = 8cm]{poster_images/angle_alpha1.png}}
-\frame{\includegraphics[width=0.45\linewidth,height = 8cm]{poster_images/angle_alpha.png}}
+\frame{\includegraphics[width=0.40\linewidth,height = 7cm]{poster_images/angle_alpha1.png}}
+\frame{\includegraphics[width=0.40\linewidth,height =
+7cm]{poster_images/angle_alpha.png}}
+\\
 \centering
 \caption{\emph{Detected lines on bottom of the frame / Representation of the \(\alpha\) angle}}
 \end{center}
-The \(\alpha\) angle is defined as the average angle of the detected lines. We take only the bottom of the image into account, in order not to communicate a direction too early to the user and get
-out of the line.
+The \(\alpha\) angle is defined as the average angle of the detected lines in the selected zone.
+This selected zone is such that instructions are not given too early (which could misdirect the user)
+
+
 
 % TODO: add caption, resize image and spacing
 
 \begin{center} \LARGE {Taking the user position into account}
 \end{center}
+
+\begin{center}
+\frame{\includegraphics[width=0.45\linewidth,height = 8cm]{distance_bas_barycentre.png}}
+\frame{\includegraphics[width=0.45\linewidth,height = 8cm]{poster_images/angle_beta_barycentre_targetpoint.png}}
+\\
+\centering
+\caption{\emph{Reprentation of the distance \(d\) and the \(\beta\) angle}}
+\end{center}
+
+Because the user could deviate from the line, we select the very bottom of the frame and look at the distance \(d\) between the barycentre of the line and the middle of the frame.
+\\
+If \(d\) is too important, the instruction to give is to get back on the line.\\
+For this instruction, we define the \(\beta\) angle as represented :
+\(\beta\) is the angle between the barycentre of the line in the target zone (in red) and the user.
+This target zone is ahead of the user to plan for his movements and to optimize his travel time.
+
+
+
 
 
 % \begin{center}
@@ -136,35 +158,6 @@ out of the line.
 
 \column{0.5}
 
-\block{}{
-
-Along with giving the line direction, it should also be taken into account that
-the user could deviate from the line and needs to get back to it quickly. \\
-For this purpose, we take a look at the distance \(d\) of the barycentre of the
-pixels detected as edges, at the bottom of the line, with the middle of the
-image (considered as the user's position).
-
-\begin{center}
-\includegraphics[width=0.2\linewidth]{distance_bas_barycentre.png}
-\end{center}
-
-Then, if the distance is too important, the user should be given the
-information to get back on the line instead of following its curve, because he
-is no longer on it. \\
-In order to do this, we define the \(\beta\) angle as the angle between the
-barycentre of a fine-tuned target zone (towards the user should go) and the
-user itself. This target zone is not perpendicular to the user but is choosen a
-little more ahead, so that the changes in direction are not enormous and that
-the time spent to get back to the line is not huge too (reminding that it is a
-race).
-
-\begin{center}
-\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_beta_barycentre_targetpoint.png}
-
-\large l'angle beta wow
-\end{center}
-
-}
 
 \block{Information processing}{
 We want the final angle to reflect the distance of the user to the line, i.e.
@@ -203,7 +196,7 @@ It follows,
 
 Finally, we have
 
-\[ \gamma = (1 - f(d))\alpha + f(d)\beta \]
+\[ \gamma = e^{\frac{-6d}{w}}\alpha + (1 - e^{\frac{-6d}{w}})\beta \]
 \[ \gamma = \alpha + (1 - e^{\frac{-6d}{w}})(\beta - \alpha) \]
 
 
@@ -233,6 +226,10 @@ Finally, we have
 \block{\textbf{Sound Processing}}{}
 
 \end{columns}
-\block{\textbf{Conclusion}}{}
+\block{\textbf{Conclusion}}{
+
+\lipsum
+
+}
 \end{document}
     
