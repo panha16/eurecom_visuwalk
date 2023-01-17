@@ -2,9 +2,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{amsmath}
-\graphicspath{{./poster\_images/}}
-\usepackage{xcolor}
-
+\graphicspath{{./images/}}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{textgreek}
 \definecolor{eurecomblue}{RGB}{0,159,227}
 \definecolor{visuwalkorange}{RGB}{255,204,0}
 
@@ -69,7 +69,7 @@ The available tools are a Rasperry Pi and its camera.
 For this goal, one needs to : \\
 Detect the line from the camera's video \\
 Process the line with the right technique \\
-Communicate instructions to the user
+Find a way to communicate instructions to the user
 }
 
 \begin{columns}
@@ -77,32 +77,68 @@ Communicate instructions to the user
 \column{0.5}
 
 \block{
-\textbf{Video Processing}}{
+\textbf{Video / Image Processing}}{
 
 \begin{center} \LARGE {Detecting the line}
 \end{center}
 
-\vspace{2mm}
-Prior to detecting the line, we process the image to optimize the detection quality through: \\
-- Bilateral filtering \\
-- Canny edge detection \\
-Then we apply Hough transform to detect straight lines in the edges image.
+The steps to detect the line from the video are the following :  \\
+Converting the image to gray \\
+Applying a low-pass filter \\
+Applying a Canny edge detector \\
+Applying a Hough Transform to retrieve the lines coordinate \\
 
-\vspace{2mm}
+\begin{center}
+\includegraphics[height = 7cm, width = 6cm]{poster_images/reel3.jpg}
+\includegraphics[height = 7cm, width = 6cm]{poster_images/gray.jpg}
+\includegraphics[height = 7cm, width = 6cm]{poster_images/canny_edge.jpg}
+\includegraphics[height = 7cm, width = 6cm]{poster_images/houghlines_maybe.jpg}
+\\
 
 \centering
-\includegraphics[height = 5cm, width = 5cm]{reel3.jpg}
-\includegraphics[height = 5cm, width = 5cm]{gray.jpg}
-\includegraphics[height = 5cm, width = 5cm]{canny_edge.jpg}
-\includegraphics[height = 5cm, width = 5cm]{houghlines_maybe.jpg}
+\large omg ça marche  
+\end{center}
+
+
+\begin{center} \LARGE {Calculating the \textalpha\ and \textbeta\ angle}
+\end{center}
+
+
+\begin{center}
+\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_alpha1.png}
+\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_alpha.png}
+\\
+
+\centering
+\large l'angle alpha wow
+\end{center}
+
+\begin{center}
+\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_beta_barycentre_targetpoint.png}
+\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_beta_barycentre_targetpoint.png}
+\\
+
+\centering
+\large l'angle beta wow
+\end{center}
+
+\begin{center} \LARGE {Calculating the distance d}
+\end{center}
+
+
 }
-
-
 
 \column{0.5}
 
-\block{
-\textbf {Guiding the user}}{
+\block{}{
+\begin{center}
+\includegraphics[height = 7cm, width = 6cm]{poster_images/distance_bas_barycentre.png}
+\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_beta_barycentre_targetpoint.png}
+\\
+
+\centering
+\large la distance d wow
+\end{center}
 
 }
 
