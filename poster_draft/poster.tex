@@ -236,13 +236,19 @@ Finally, we have
 
 }
 
-\block{\textbf{Sound Processing}}{}
+\block{\textbf{Sound Processing}}{
 
-\end{columns}
-\block{\textbf{Conclusion}}{
-
-\lipsum
+To guide the user , we decided to use stereo sound.
+If the user has to go right, the sound will come from his right ear and vice versa.\\
+The amplitude \emph{A} and frequency \emph{f} of the sound will vary depending on how sharp of a turn the user must make, following these formulas :
+\[ A = 0.08\sqrt{|\gamma|} \]
+\[ f = 3,9 |\gamma| + 230\]
 
 }
+
+\end{columns}
+\block{\textbf{Conclusion}}{}
+
+
 \end{document}
     
