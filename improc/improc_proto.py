@@ -46,6 +46,7 @@ def get_distance_middle(image, start_y, end_y):
     ''' Computes the distance between the middle
     of the image and the line on a given y range'''
     y,point = get_barycentre(image, start_y, end_y)
+    cv2.line(image,(point,y),(point,y),(255,0,0),3)
     width = len(image[0])
     return abs(point-width/2)
 
@@ -111,7 +112,7 @@ if(type(lines) is np.ndarray):
         tp_y, tp_x = get_barycentre(edges, int(height/2), int(2*height/3))  # target point coordinates
     except NoLineBottom:
         tp_y, tp_x = get_barycentre(edges, 0, height)   # look through whole image if no line detected in wanted bounds
-    cv2.line(edges,(tp_x,tp_y),(tp_x,tp_y),(255,0,0),3)
+    #cv2.line(edges,(tp_x,tp_y),(tp_x,tp_y),(255,0,0),3)
 
     # transform coordinates into vector with tp as start point and bottom of middle vertical line
     # as end point
