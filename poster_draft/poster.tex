@@ -5,6 +5,7 @@
 \graphicspath{{./poster\_images/}}
 \usepackage{xcolor}
 \usepackage{changepage}
+\usepackage{multicol}
 \definecolor{eurecomblue}{RGB}{0,159,227}
 \definecolor{visuwalkorange}{RGB}{200,160,0}
 
@@ -160,28 +161,14 @@ This target zone is ahead of the user to plan for his movements and to optimize 
 
 
 \block{Information processing}{
+
+\begin{multicols}{2}
+
 We want the final angle to reflect the distance of the user to the line, i.e.
 we take more \(\alpha\) into account when \(d\) is small than \(\beta\), and
 vice-versa. \\
 Thus, we need a function \(f(d)\) that is close to 0 when \(d\) is small, and
 close to 1 when \(d\) is big.
-
-
-\begin{center}
-\begin{tikzpicture}[scale=3]
-\draw[>=stealth, ->] (0,0) -- (4,0);
-\draw [>=stealth, ->] (0,0) -- (0,1.2);
-
-\draw (4,0) node[right] {\(d\)};
-\draw (3.8,1) node[right] {\(f(d)\)};
-
-\draw (0,1) node[left] {\(1\)};
-\draw [dashed] (0,1) -- (3.8,1);
-\draw [dashed] (3,0) -- (3,0.95);
-\draw (3,0) node[below] {\(d_{95\%}\)};
-\draw [domain=0:3.8] plot (\x, {1-exp(-\x)});
-\end{tikzpicture}
-\end{center}
 
 
 We choose
@@ -200,8 +187,30 @@ Finally, we have
 \[ \gamma = \alpha + (1 - e^{\frac{-6d}{w}})(\beta - \alpha) \]
 
 
+\columnbreak
+
+\null \vfill
+
 \begin{center}
-\begin{tikzpicture}[scale=3]
+\begin{tikzpicture}[scale=2]
+\draw[>=stealth, ->] (0,0) -- (4,0);
+\draw [>=stealth, ->] (0,0) -- (0,1.2);
+
+\draw (4,0) node[right] {\(d\)};
+\draw (3.8,1) node[right] {\(f(d)\)};
+
+\draw (0,1) node[left] {\(1\)};
+\draw [dashed] (0,1) -- (3.8,1);
+\draw [dashed] (3,0) -- (3,0.95);
+\draw (3,0) node[below] {\(d_{95\%}\)};
+\draw [domain=0:3.8] plot (\x, {1-exp(-\x)});
+\end{tikzpicture}
+\end{center}
+
+\vfill
+
+\begin{center}
+\begin{tikzpicture}[scale=2]
 \draw[>=stealth, ->] (0,0) -- (4,0);
 \draw [>=stealth, ->] (0,0) -- (0,2.5);
 \draw (0,0) node[below] {\(0\)};
@@ -220,6 +229,10 @@ Finally, we have
 
 \end{tikzpicture}
 \end{center}
+
+\vfill \null
+
+\end{multicols}
 
 }
 
