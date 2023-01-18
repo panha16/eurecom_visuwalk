@@ -68,12 +68,12 @@ rectangle (blocktitle.north east);
 \block[titleoffsety=13cm,bodyoffsety=138mm,bodyverticalshift=10mm,titleinnersep=5mm,bodyinnersep=4mm,bodyoffsetx=80mm,bodywidthscale=.72,titlewidthscale=.4]{\textbf {Abstract}}{
 \Large
 % TODO: add phrase d'accroche on blind people et les besoins et la raison pour ce projet etc.
-The goal of this semester project is to guide ,with sounds, a visually impaired person to follow a line. \\
+According to the WHO, at least 2.2 billion people in the world have a form of visual impairment. To help these persons, we created, for the S5 semester project, a program to guide with sounds a visually impaired person to follow a line. \\
 The available tools are a Rasperry Pi and its camera.
 For this goal, one needs to : \\
-Detect the line from the camera's video \\
-Process the line with the right technique \\
-Find a way to communicate instructions to the user
+- Detect the line from the camera's video \\
+- Process the line with the right technique \\
+- Find a way to communicate instructions to the user
 }
 
 \begin{columns}
@@ -132,13 +132,13 @@ This selected zone is such that instructions are not given too early (which coul
 \frame{\includegraphics[width=0.45\linewidth,height = 8cm]{poster_images/angle_beta_barycentre_targetpoint.png}}
 \\
 \centering
-\caption{\emph{Reprentation of the distance \(d\) and the \(\beta\) angle}}
+\caption{\emph{Representation of the distance \(d\) and the \(\beta\) angle}}
 \end{center}
 
 Because the user could deviate from the line, we select the very bottom of the frame and look at the distance \(d\) between the barycentre of the line and the middle of the frame.
 \\
 If \(d\) is too important, the instruction to give is to get back on the line.\\
-For this instruction, we define the \(\beta\) angle as represented :
+For this instruction, we define the \(\beta\) angle as represented above.
 \(\beta\) is the angle between the barycentre of the line in the target zone (in red) and the user.
 This target zone is ahead of the user to plan for his movements and to optimize his travel time.
 
@@ -164,7 +164,7 @@ This target zone is ahead of the user to plan for his movements and to optimize 
 
 \begin{multicols}{2}
 
-We want the final angle to reflect the distance of the user to the line, i.e.
+We want the final angle, \(\gamma\) ,to reflect the distance of the user to the line, i.e.
 we take more \(\alpha\) into account when \(d\) is small than \(\beta\), and
 vice-versa. \\
 Thus, we need a function \(f(d)\) that is close to 0 when \(d\) is small, and
@@ -183,7 +183,7 @@ It follows,
 
 Finally, we have
 
-\[ \gamma = e^{\frac{-6d}{w}}\alpha + (1 - e^{\frac{-6d}{w}})\beta \]
+\[ \gamma = (1 - f(d))\alpha + f(d)\beta \]
 \[ \gamma = \alpha + (1 - e^{\frac{-6d}{w}})(\beta - \alpha) \]
 
 
@@ -236,7 +236,7 @@ Finally, we have
 
 }
 
-\block{\textbf{Sound Processing}}{
+\block{\textbf{Sound Generation}}{
 
 To guide the user , we decided to use stereo sound.
 If the user has to go right, the sound will come from his right ear and vice versa.\\
@@ -244,11 +244,28 @@ The amplitude \emph{A} and frequency \emph{f} of the sound will vary depending o
 \[ A = 0.08\sqrt{|\gamma|} \]
 \[ f = 3,9 |\gamma| + 230\]
 
+The choice of the square root function is because we want low variations of amplitude at high angles as the human will already be sensible to high frequencies.
+
+\begin{center}
+\frame{\includegraphics[width=0.45\linewidth,height = 8cm]{soundproc_poster_amplitude.png}}
+\frame{\includegraphics[width=0.45\linewidth,height = 8cm]{soundproc_poster_frq.png}}
+\\
+\centering
+\caption{\emph{Representation of A and f depending on \(\gamma\)}}
+\end{center}
+
+For small angles \ (i.e \gamma \in [-40,40])\), \emph{A} is the dominant parameter. \\
+For greater angles \ (i.e \gamma \in [-70,40] \cup [40,70])\), \emph{f} is the dominant parameter.
 }
 
 \end{columns}
-\block{\textbf{Conclusion}}{}
 
+\block[titleoffsety=10mm,bodyoffsety=18mm]{\textbf{Conclusion}}{
+Despite what one may think, the ways to communicate with a blind person are numerous, and we tried to choose one the most efficient one.\\
+Some enhancements could still be made, as for example the use of a filter that will remove the periodic noise caused by the pattern of the carpet.
+Also, the target zone could be better fine tuned using machine learning to assess the different types of walking of users.\\
+Concerning the sound, it could be upgraded to make it sound more pleasant than a simple sine wave (possible ideas include playing the sound of an instrument)
+}
 
 \end{document}
     
