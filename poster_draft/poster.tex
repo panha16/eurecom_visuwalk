@@ -1,10 +1,10 @@
-\documentclass[20pt, a1paper, portrait]{tikzposter}
+\documentclass[17pt, a1paper, portrait]{tikzposter}
 \usepackage[utf8]{inputenc}
 \usepackage{graphicx}
 \usepackage{amsmath}
-\graphicspath{{./images/}}
-\usepackage[dvipsnames]{xcolor}
-\usepackage{textgreek}
+\graphicspath{{./poster\_images/}}
+\usepackage{xcolor}
+%\usepackage{textgreek}
 \definecolor{eurecomblue}{RGB}{0,159,227}
 \definecolor{visuwalkorange}{RGB}{255,204,0}
 
@@ -45,6 +45,8 @@ rectangle (blocktitle.north east);
 \fi
 }
 
+%TODO: maybe, remove watermark (bottom right of the page)
+
 \usetitlestyle{Empty}
 
 \usebackgroundstyle{eurecom}
@@ -64,6 +66,7 @@ rectangle (blocktitle.north east);
 
 \block[titleoffsety=30mm,bodyoffsety=38mm,bodyverticalshift=10mm,titleinnersep=5mm,bodyinnersep=4mm]{\textbf {Abstract}}{
 \Large
+% TODO: add phrase d'accroche on blind people et les besoins et la raison pour ce projet etc.
 The goal of this semester project is to guide ,with sounds, a visually impaired person to follow a line. \\
 The available tools are a Rasperry Pi and its camera.
 For this goal, one needs to : \\
@@ -77,76 +80,104 @@ Find a way to communicate instructions to the user
 \column{0.5}
 
 \block{
-\textbf{Video / Image Processing}}{
+\textbf{Video Processing}}{
 
 \begin{center} \LARGE {Detecting the line}
 \end{center}
 
-The steps to detect the line from the video are the following :  \\
-Converting the image to gray \\
-Applying a low-pass filter \\
-Applying a Canny edge detector \\
-Applying a Hough Transform to retrieve the lines coordinate \\
+\vspace{2mm}
+Prior to detecting the line, the image is processed to optimize the detection quality through: \\
+- Bilateral filtering \\
+- Canny edge detection \\
+Then Hough transform is applied to detect straight lines in the edges image.
+ 
+\vspace{2mm}
 
 \begin{center}
 \includegraphics[height = 7cm, width = 6cm]{poster_images/reel3.jpg}
 \includegraphics[height = 7cm, width = 6cm]{poster_images/gray.jpg}
 \includegraphics[height = 7cm, width = 6cm]{poster_images/canny_edge.jpg}
 \includegraphics[height = 7cm, width = 6cm]{poster_images/houghlines_maybe.jpg}
+\end{center}
+
+% TODO: add caption, resize image and spacing
 \\
 
-\centering
-\large omg ça marche  
+\begin{center} \LARGE {Computing the line direction}
 \end{center}
 
-
-\begin{center} \LARGE {Calculating the \textalpha\ and \textbeta\ angle}
-\end{center}
-
+The \(\alpha\) angle is defined as the average angle of the detected lines in
+the image with the Hough transform. We take only the bottom of the image into
+account, in order not to communicate a direction too early to the user and get
+out of the line.
 
 \begin{center}
-\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_alpha1.png}
-\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_alpha.png}
-\\
-
-\centering
-\large l'angle alpha wow
-\end{center}
-
-\begin{center}
-\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_beta_barycentre_targetpoint.png}
-\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_beta_barycentre_targetpoint.png}
-\\
-
-\centering
+\includegraphics[width=0.45\linewidth]{poster_images/angle_alpha1.png}
+\includegraphics[width=0.45\linewidth]{poster_images/angle_alpha.png}
 \large l'angle beta wow
 \end{center}
-
-\begin{center} \LARGE {Calculating the distance d}
-\end{center}
-
-
+% TODO: add caption, resize image and spacing
 }
 
 \column{0.5}
 
 \block{}{
-\begin{center}
-\includegraphics[height = 7cm, width = 6cm]{poster_images/distance_bas_barycentre.png}
-\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_beta_barycentre_targetpoint.png}
-\\
+\begin{center} \LARGE {Taking the user position into account}
+\end{center}
 
-\centering
-\large la distance d wow
+Along with giving the line direction, it should also be taken into account that
+the user could deviate from the line and needs to get back to it quickly. \\
+For this purpose, we take a look at the distance \(d\) of the barycentre of the
+pixels detected as edges, at the bottom of the line, with the middle of the
+image (considered as the user's position).
+
+\begin{center}
+\includegraphics[width=0.2\linewidth]{distance_bas_barycentre.png}
+\end{center}
+
+Then, if the distance is too important, the user should be given the
+information to get back on the line instead of following its curve, because he
+is no longer on it. \\
+In order to do this, we define the \(\beta\) angle as the angle between the
+barycentre of a fine-tuned target zone (towards the user should go) and the
+user itself. This target zone is not perpendicular to the user but is choosen a
+little more ahead, so that the changes in direction are not enormous and that
+the time spent to get back to the line is not huge too (reminding that it is a
+race).
+
+\begin{center}
+\includegraphics[height = 7cm, width = 6cm]{poster_images/angle_beta_barycentre_targetpoint.png}
+
+\large l'angle beta wow
 \end{center}
 
 }
 
-\block{}{
-We choose \(\tau\) so that \(d_{95\%} = \frac{w}{2}\), thus we have
-\[ 3\tau = \frac{w}{2}, \quad \tau = \frac{w}{6} \]
+\block{Information processing}{
+We want the final angle to reflect the distance of the user to the line, i.e.
+we take more \(\alpha\) into account when \(d\) is small than \(\beta\), and
+vice-versa. \\
+Thus, we need a function \(f(d)\) that is close to 0 when \(d\) is small, and
+close to 1 when \(d\) is big.
+
+%TODO: add tikz figure de f(d) seulement
+
+We choose
+
+\[ f(d) = (1 - e^{\frac{-d}{\tau}}) \]
+
+We choose \(\tau\) so that \(d_{95\%} = \frac{\text{width}}{2}\), thus we
+have
+\[ 3\tau = \frac{\text{width}}{2}, \quad \tau = \frac{\text{width}}{6} \]
 It follows,
-\[f(d) = 1 - e^{\frac{-6d}{w}}\]
+\[f(d) = 1 - e^{\frac{-6d}{\text{width}}}\]
+
+Finally, we have
+
+\[ \gamma = e^{\frac{-6d}{\text{width}}}\alpha + (1 - e^{\frac{-6d}{\text{width}}})\beta \]
+\[ \gamma = \alpha + (1 - e^{\frac{-6d}{\text{width}}})(\beta - \alpha) \]
+
+% TODO: ajouter tikz plot des deux termes et de gamma(d)
 }
 
 \block{\textbf{Sound Processing}}{}
