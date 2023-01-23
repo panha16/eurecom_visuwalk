@@ -1,5 +1,8 @@
 from picamera.array import PiRGBArray
 from picamera import PiCamera
+from scipy.io.wavfile import write
+import pyaudio
+import random
 import numpy as np
 import time
 import cv2
@@ -7,7 +10,20 @@ import io
 import math
 
 
-from fifo import *
+def create_queue(length):
+    queue = [0]*(length+1) # premier element : index du dernier ajoute
+    return queue
+
+def add_element(elem, queue):
+    length = len(queue) - 1
+    elem_index = int(queue[0]%length + 1)
+    queue[elem_index] = elem
+    queue[0] = elem_index
+
+def avg_queue(queue):
+    n = len(queue) - 1
+    avg = (sum(queue) - queue[0])/n
+    return avg
 
 
 class NoLineBottom(Exception):
@@ -55,13 +71,21 @@ def get_distance_middle(image, start_y, end_y):
     width = len(image[0])
     return abs(point-width/2)
 
-
+temp1=0
+temp2=0
 height=320
 width=240
 camera = PiCamera()
 camera.resolution = (height,width)
 camera.framerate = 30
 rawCapture = PiRGBArray(camera,size = (height,width))
+
+# Generate the sine wave
+sample_rate = 44100 # fs
+# Changing the number of samples changes the frequency
+duration = 0.3
+array = np.arange(duration*sample_rate)
+zero = np.zeros(int(duration*sample_rate), dtype= float).astype(np.float32)
 
 avg_gamma = create_queue(4)
 
@@ -135,3 +159,41 @@ for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port 
 
     # clear the stream in preparation for the next frame
     rawCapture.truncate(0)
+
+    if avg_gamma[-1] > 0 and avg_gamma[-1]!=temp1 :
+        temp1=avg_gamma[-1]
+    # Set the amplitude and frequency
+        A = 0.08*np.sqrt(avg_gamma[-1])
+        f = 3.8*avg_gamma[-1]+ 230
+        samples = A*(np.sin(2*np.pi*array*f/sample_rate)).astype(np.float32)
+        # Save stereo samples
+        stereo_samples = np.column_stack((zero, samples))
+
+        print(stereo_samples)
+        # Save the sine wave to a WAV file
+        write("sine_wave.wav", sample_rate, stereo_samples)
+        p = pyaudio.PyAudio()
+        stream = p.open(format=pyaudio.paFloat32, channels=2, rate=sample_rate, output=True)
+        stream.write(stereo_samples.tobytes())
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
+
+    if avg_gamma[-1] <= 0 and avg_gamma[-1]!=temp2:
+        temp2 = avg_gamma[-1]
+        A = 0.08*np.sqrt(-avg_gamma[-1])
+        f = 3.8*(-avg_gamma[-1]) + 230
+        samples = A*(np.sin(2*np.pi*array*f/sample_rate)).astype(np.float32)
+        # Save stereo samples
+        stereo_samples = np.column_stack((samples, zero))
+       
+        print(stereo_samples)
+        # Save the sine wave to a WAV file
+        write("sine_wave.wav", sample_rate, stereo_samples)
+        p = pyaudio.PyAudio()
+        stream = p.open(format=pyaudio.paFloat32, channels=2, rate=sample_rate, output=True)
+        stream.write(stereo_samples.tobytes())
+        stream.stop_stream()
+        stream.close()
+        p.terminate()
+

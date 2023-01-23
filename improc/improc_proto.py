@@ -72,16 +72,18 @@ middle_vertical_line =[int(width/2), 0, int(width/2), height] # used for debug p
 # using canny edge detection and hough transform to detect edges and lines
 edges = cv2.Canny(gray_frame,50,200)
 
+alpha = 0 # alpha angle (cf. documentation)
+no_alpha = False    # True when line is not in the bottom frame
+
 # detecting the lines for the half-bottom part of the image
 lines = cv2.HoughLinesP(edges[int(height/2):,:],rho=20,theta=np.pi/45,threshold=30,minLineLength=4)
 
 # look through whole image if no line is detected
 if(type(lines) is not np.ndarray):
     lines = cv2.HoughLinesP(edges,rho=20,theta=np.pi/45,threshold=30,minLineLength=4)
+    no_alpha = True
 
 cv2.line(gray_frame,(int(width/2),0), (int(width/2), height),(255,0,0),5)
-
-alpha = 0 # alpha angle (cf. documentation)
 
 if(type(lines) is np.ndarray):
     for line in lines:
@@ -121,12 +123,12 @@ if(type(lines) is np.ndarray):
     beta = get_angle_vertical(tp_y, tp_x)
     print("beta = ", beta)
 
-    gamma = alpha + (1 - math.exp(-6*d/width))*(beta-alpha)
+    gamma = alpha + (1 - math.exp(-6*d/width))*(beta-alpha) if not no_alpha else beta
     print("gamma = ", gamma)
 
 else:
     print("no lines detected in frame !!!") 
-    gamma = 100     # value out of the bounds, to notify that no angle was detected
+    gamma = 100     # value out of the bounds, to notify that no angle is communicated
 
 
 cv2.imshow('edges', edges)
