@@ -88,6 +88,7 @@ array = np.arange(duration*sample_rate)
 zero = np.zeros(int(duration*sample_rate), dtype= float).astype(np.float32)
 
 avg_gamma = create_queue(4)
+gamma = 0
 
 for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port = True):
     frame = frame.array
@@ -147,11 +148,12 @@ for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port 
         tp_x = int(width/2) - tp_x
         beta = get_angle_vertical(tp_y, tp_x)
 
-        gamma = alpha + (1 - math.exp(-6*d/width))*(beta-alpha) if not no_alpha else beta
-        print("gamma = ", gamma)
+        frame_gamma = alpha + (1 - math.exp(-6*d/width))*(beta-alpha) if not no_alpha else beta
+        print("frame_gamma = ", frame_gamma)
 
-        add_element(gamma, avg_gamma)
+        add_element(frame_gamma, avg_gamma)
         print("avg gamma = ", avg_queue(avg_gamma))
+        gamma = avg_queue(avg_gamma)
 
     else:
         print("no lines detected in frame !!!") 
@@ -160,11 +162,10 @@ for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port 
     # clear the stream in preparation for the next frame
     rawCapture.truncate(0)
 
-    if avg_gamma[-1] > 0 and avg_gamma[-1]!=temp1 :
-        temp1=avg_gamma[-1]
-    # Set the amplitude and frequency
-        A = 0.08*np.sqrt(avg_gamma[-1])
-        f = 3.8*avg_gamma[-1]+ 230
+    if angle > 0 and angle != 100:
+        # Set the amplitude and frequency
+        A = 0.08*np.sqrt(angle)
+        f = 3.8*angle+ 230
         samples = A*(np.sin(2*np.pi*array*f/sample_rate)).astype(np.float32)
         # Save stereo samples
         stereo_samples = np.column_stack((zero, samples))
@@ -179,10 +180,9 @@ for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port 
         stream.close()
         p.terminate()
 
-    if avg_gamma[-1] <= 0 and avg_gamma[-1]!=temp2:
-        temp2 = avg_gamma[-1]
-        A = 0.08*np.sqrt(-avg_gamma[-1])
-        f = 3.8*(-avg_gamma[-1]) + 230
+    elif angle < 0 and angle != 100: 
+        A = 0.08*np.sqrt(-angle)
+        f = 3.8*(-angle) + 230
         samples = A*(np.sin(2*np.pi*array*f/sample_rate)).astype(np.float32)
         # Save stereo samples
         stereo_samples = np.column_stack((samples, zero))
