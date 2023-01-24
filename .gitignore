@@ -9,4 +9,7 @@ poster/*.pdf
 
 report/*.aux
 report/*.log
+report/*.nlo
+report/*.out
+report/*.toc
 report/*.pdf
