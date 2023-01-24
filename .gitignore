@@ -2,7 +2,11 @@ case/*.png
 case/*.step
 case/*.stl
 
-poster_draft/*.aux
-poster_draft/*.log
-poster_draft/*.pdf
+poster/*.aux
+poster/*.log
+poster/*.pdf
 !poster_draft/poster_template.pdf
+
+report/*.aux
+report/*.log
+report/*.pdf
