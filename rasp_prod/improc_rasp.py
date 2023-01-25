@@ -3,6 +3,7 @@ from picamera import PiCamera
 import numpy as np
 import cv2
 import math
+import time
 
 from fifo import *
 
@@ -63,7 +64,7 @@ def get_angle(gamma):
     camera.framerate = 30
     rawCapture = PiRGBArray(camera,size = (height,width))
 
-    avg_gamma = create_queue(4)
+    avg_gamma = create_queue(6)
 
     for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port = True):
         frame = frame.array
@@ -126,11 +127,12 @@ def get_angle(gamma):
             frame_gamma = alpha + (1 - math.exp(-6*d/width))*(beta-alpha) if not no_alpha else beta
 
             add_element(frame_gamma, avg_gamma)
-            gamma = avg_queue(avg_gamma)
+            gamma.value = avg_queue(avg_gamma)
+            print(avg_queue(avg_gamma))
 
         else:
             print("no lines detected in frame !!!")
-            gamma = 100     # value out of the bounds, to notify that no angle is communicated
+            gamma.value = 100     # value out of the bounds, to notify that no angle is communicated
 
         # clear the stream in preparation for the next frame
         rawCapture.truncate(0)

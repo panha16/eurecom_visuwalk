@@ -13,3 +13,5 @@ report/*.nlo
 report/*.out
 report/*.toc
 report/*.pdf
+
+rasp_prod/__pycache__

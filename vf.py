@@ -153,11 +153,11 @@ for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port 
 
         add_element(frame_gamma, avg_gamma)
         print("avg gamma = ", avg_queue(avg_gamma))
-        gamma = avg_queue(avg_gamma)
+        angle = avg_queue(avg_gamma)
 
     else:
         print("no lines detected in frame !!!") 
-        gamma = 100     # value out of the bounds, to notify that no angle is communicated
+        angle = 100     # value out of the bounds, to notify that no angle is communicated
 
     # clear the stream in preparation for the next frame
     rawCapture.truncate(0)
