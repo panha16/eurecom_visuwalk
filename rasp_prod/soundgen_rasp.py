@@ -19,25 +19,20 @@ def generate_audio(gamma):
     while(True):
         angle = gamma.value
         if angle != 100:    # out of bound value that indicates that no line was detected
-            if angle < 5 and angle > -5:
+            # Set the amplitude and frequency
+            A = 0.08*np.sqrt(abs(angle))
+            f = 3.8*abs(angle)+ 230
+            samples = A*(np.sin(2*np.pi*array*f/sample_rate)).astype(np.float32)
+
+            if abs(angle) < 4: # small angle : sound in both ears
                 A = 0.03
                 f = 230
                 samples = A*(np.sin(2*np.pi*array*f/sample_rate)).astype(np.float32)
                 # Save stereo samples
                 stereo_samples = np.column_stack((samples, samples))
-            elif angle > 0:
-        # Set the amplitude and frequency
-                A = 0.08*np.sqrt(angle)
-                f = 3.8*angle+ 230
-                samples = A*(np.sin(2*np.pi*array*f/sample_rate)).astype(np.float32)
-                # Save stereo samples
-                stereo_samples = np.column_stack((zero, samples))
-
             elif angle < 0:
-                A = 0.08*np.sqrt(-angle)
-                f = 3.8*(-angle) + 230
-                samples = A*(np.sin(2*np.pi*array*f/sample_rate)).astype(np.float32)
-                # Save stereo samples
+                stereo_samples = np.column_stack((zero, samples))
+            elif angle > 0:
                 stereo_samples = np.column_stack((samples, zero))
 
             stream.write(stereo_samples.tobytes())
