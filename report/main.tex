@@ -3,6 +3,8 @@
 \usepackage{tikz}
 \usepackage{wrapfig}
 \usepackage{caption}
+\usepackage{hyperref}
+
 \title{Rapport UCL - Template} %Titre du fichier
 
 \begin{document}
@@ -29,13 +31,15 @@
 \section{Abstract}
 
 
-For this semester project, to aid the 2.2 billion visually impaired persons in the world, we were asked to develop a system capable of guiding the latter following a line.\\ Despite the access to multiple technologies capable of helping them navigate, they are for the most part not fit for sports. The most popular solution being the white cane : it is very efficient but not so practical, as it needs a lot of practice to use it and prevents you from using both of your arms/hands if you want to do something.\\For this purpose, we developed Visuwalk for this semester project, a device able to guide you in following a line through audio feedback.\\
+For this semester project, to aid the 2.2 billion visually impaired persons in the world, we were asked to develop a system capable of guiding the latter following a line.\\ Despite the access to multiple technologies capable of helping them navigate, these devices are for the most part not fit for sports. The most popular solution being the white cane : it is very efficient but not so practical, as it needs a lot of practice to use it and prevents you from using both of your arms/hands if you want to do something.\\For this purpose, we developed Visuwalk for this semester project, a device able to guide you in following a line through audio feedback.\\
 The tools we were given for project are a Raspberry Pi and its camera. The main goals of this project are the following :\\
 - Detecting the line from the Raspberry Pi’s camera\\
 - Process the information given by the line\\
 - Generate sound cues to guide the user
 
 \section {User manual}
+
+In order to use our software on your own device, just flash the Visuwalk flavoured Raspbian image from our \href{https://gitlab.eurecom.fr/algh2/visuwalk/-/releases}{Gitlab page}, onto your SD Card. However, if you have got some issues, or an existing installation that you don't want to mess up, make sure you have the \verb|python3-numpy|, \verb|python3-pyaudio|, \verb|python3-opencv| and \verb|python3-picamera| installed on your device, copy the Python scripts that are in the \verb|rasp_prod/| folder of our repository, and execute \verb|main.py|.
 
 
 \section{Technical manual}
@@ -53,14 +57,22 @@ Concerning Matlab and Simulink, some of us had already used these softwares, but
 The option of using Python showed up because other groups had issues just like us and switched to Python. Thus, we talked about the switch, and decided not to switch completely as we had already advanced on the Matlab code. Instead, we let Guillaume,in parallel, try to do the video processing part (that was done on Matlab) on Python, to see how easier (or harder) it would be.\\
 It was much easier and produced better results.And so we were left with one last question : should we also do the sound generation part on Python ?
 We were quite reluctant at first, given that almost the whole code was already done in Simulink and that switching and translating it all would take an important amount of time. Besides, we searched and found multiple ways to make a bridge between Python and Simulink. But time was ticking and we still had not found a way to make any of these bridges work correctly, so we made the switch. And it did not take as long as we expected, despite the issues we encountered. \\
-Still, we found some interesting features like the C code generation, which would be used to embed the program on a portable system. Knowing that shared memory in C is possible and probably easier than in Matlab, we searched for a way to use shared memory in Python, and to manually modify the C generated code to implement the share of memory between the sound generation part and the Python video processing, so that the second could indicate the direction to the first.\\
+Still, we found some interesting features like the C code generation in Matlab/Simulink, which would be used to embed the program on a portable system. Knowing that shared memory in C is possible and probably easier than in Matlab, we searched for a way to use shared memory in Python, and to manually modify the C generated code to implement the share of memory between the sound generation part and the Python video processing, so that the second could indicate the direction to the first.\\
+
 \subsection{Image processing}
 \vspace{3mm}
 \begin{flushleft}
     \textbf{\large{First discarded idea}}
 \end{flushleft}
-The first idea we had was to horizontally cut the frame in 2 and process each of them.\\On the upper frame, we would calculate the angle between the middle of the frame and the detected line. On the bottom frame, we would calculate the distance between the detected line and the middle of the frame and this distance would tell us whether the user was standing on the right, left or directly on the line.\\ However, we discarded this idea as the calculation of both the angle and distance were not accurate and neither was the instruction. Indeed, rather than taking the fastest path, it would force the user to always stay on the line, leading to weird routes and sharp turns.
+The first idea we had was to horizontally cut the frame in 2 and process each of them.\\On the upper frame, we would calculate the angle between the middle of the frame and the detected line. On the bottom frame, we would calculate the distance between the detected line and the middle of the frame and this distance would tell us whether the user was standing on the right, left or directly on the line.
+\vspace{4mm}
+\begin{center}
+    \includegraphics[width=0.4\linewidth]{ligne_decoupe.png}
+    \captionof{figure}{Representation of the first video processing idea}
+\end{center}
+\\ However, we discarded this idea as the calculation of both the angle and distance were not accurate and neither was the instruction. Indeed, rather than taking the fastest path, it would force the user to always stay on the line by making him take sharp turns, leading to a strange pathing.For example,here, it would tell the user to go right because his feet are not on the line and then left when the fastest path would be to go straight and left.\\
 So we changed our approach to the one explained in the following paragraph.
+\newpage
 \begin{flushleft}
     \textbf{\large{Final approach for the image processing part}}
 \end{flushleft}
@@ -81,7 +93,7 @@ The frames are then read by openCV and converted into grey. OpenCV represents im
 \includegraphics[width=0.35\linewidth]{canny_edge.jpg}
 \captionof{figure}{Fully filtered image of the line}
 \end{center}
-After having a clear image of the line, we apply the Hough transform which will give us a set of straight lines detected on the image. But before calculating any angle, we need to reorient the lines accordingly to our purpose. Indeed, openCV will return us vectors that are oriented towards increasing \(x\), but we need to have them all in the same directon as \(y\), because the user moves on the y axis.
+After having a clear image of the line, we apply the Hough transform which will give us a set of straight lines detected on the image. But before calculating any angle, we need to reorient the lines accordingly to our purpose. Indeed, OpenCV will return us vectors that are oriented towards increasing \(x\), but we need to have them all in the same direction as \(y\), because the user moves on the y axis.
 
 % place le ou tu veux comme tu veux Gui
 \begin{center}
@@ -102,7 +114,7 @@ After having a clear image of the line, we apply the Hough transform which will 
 
   \draw[->] (3.7,-1.5) -- (3.2,-2.3);
 \end{tikzpicture}
-\captionof{figure}{popo}
+\captionof{figure}{Reorienting the vectors}
 \end{center}
 Afterwards, we consider only the bottom of the frame and we compute the \textit{oriented} angle of each vector \(v_i\) with the \(y\) axis (defined as the \(\alpha\) angle), using:
 \[ {\alpha}_i = \text{sign}(x) \text{arcos}\left(\frac{y_i}{\|v_i\|}\right) \]
@@ -135,14 +147,49 @@ Then, for the angle communicated to the user, called \(\gamma\), we choose this 
 
 Hence we have,
 
-\[ \gamma = \alpha + (1 - e^{\frac{-6d}{w}})(\beta - \alpha) \]\\
+\[ \gamma = \alpha + (1 - e^{\frac{-6d}{w}})(\beta - \alpha) \]\
 Before sending \(\gamma\) to the sound generation module, we bound the value of the angle in \([-70°, 70°]\). We also reserve \(\gamma = 100\) when no line is detected on the image. Then we send the angle.\\
 \textit{Note:} would we have a cover to fix the raspberry on the body, could we better tune the position of the zones we look at, because we know the Raspberry's camera aperture, and giving the average height of a body, we know which distance we cover with camera and what pixel corresponds to what position in real life.
 
+\subsection {Sound generation}
+
+Once the angle \(\gamma\) between the user and the line is established, we have to give an audio feedback to the user telling him where to turn. To do so, we first used Matlab and Simulink. \\
+The goal was to use stereo audio to guide the user : if he/she hears sound in his left ear, he/she has to turn left, same for the right. \\
+We simulated the \(\gamma\) angle with a slider ranging from -70 to +70 and linked it to 2 Audio Oscillator of the Audio Toolbox on Simulink (cf the scheme).To start, we set both oscillators at a constant frequency of 440Hz.To determine the amplitude of the oscillators, we did the following:\\ 
+if \(\gamma\) is positive (the user should go left), the amplitude of the right oscillator (Ar) is zero and the amplitude of the left oscillator (Al) equals 1. Otherwise, it is the opposite (Al = 0 and Ar = 1) \\
+Then, the audio oscillator output is a matrix of double that we converted to integers for the Raspberry Pi.
+To produce the final stereo output, the two matrices (containing the values of the sinus wave) were concatenated and sent to the Raspberry Pi.
+The final matrix contains two columns (one for each audio channel) : one is equal to 0 while the other one has the oscillator values (so the sound) and inversely.\\
+\begin{center}
+\includegraphics[width=\linewidth]{sim_audio.png}
+\captionof{figure}{Simulink audio part}
+\end{center}
+To improve the accuracy of the instruction,we decided to implement a varying amplitude to change the loudness of the sound depending on how much the user has to turn.At first, we thought about 2 type of functions for the amplitude \emph{A}:
+\[ A = k*|\gamma|\] 
+\[ A = k*\gamma^{2} \]
+% \[ A = \sqrt{|\gamma|} \]
+With the proportional function, the variation of amplitude is the same for big and small angles, but we found it more relevant to make the amplitude increase a lot for big angles (i.e the user has to make a sharp turn) in order to raise the user’s attention in a louder way, leading us to choose the square function. To determine k, we tested different values until hearing a saturation of the sound for \emph{A} > 0.7, So we chose to have \ \emph{A} \in [-0.7,0.7])\), giving us \[ k = \frac{0.7}{\sqrt{70}} = 0.08\]
+However, we also wanted to give information also through the frequency, but not with too high frequencies given that old persons tend to hear them less.We first tested the range of low frequencies that were comfortable to hear: [230 Hz - 500 Hz]. We decided to use a proportional function for the frequency \emph{f}, and calculated the coefficient the following way :\\
+Given that the biggest angle for \(\gamma\) is 70, we have :
+\[ \frac{500 - 230}{70 -0} = 3.8\]
+Thus : 
+\[ f = 3,8 |\gamma| + 230\]
+Finally, after some tests, we concluded that the frequency \emph{f} was enough to guide the user for big angles (high frequencies) but not for smaller ones. So the loudness variation had to be more important for small angles, leading us to change the function for \emph{A} to the following square root function :
+\[ A = 0.09\sqrt{|\gamma|} \]
+As previously mentioned, we were not able to link the image processing part made on python to Simulink, so all of the sound generation code had to be converted in python, using the \verb|pyaudio| and \verb|numpy| modules. The methods and functions are the same.
+After testing the final program, we decided to change the audio for small angles. In fact, when the user is close to the line and going straight, the sound is passing from one ear to another quickly. We decided, with Hamza, to put sound in both ears for very small angles\ (i.e \gamma \in [-4,4])\) to tell the user to go straight.
+
+
+
 \subsection{Description of source files directory}
 
-In the folder of the source code archive, you will find the \verb|rasp_prod| folder, containing the production source code for the raspberry device, the \verb|improc| and \verb|soundproc| folder containing our test codes for development, and the case folder containing some aborted concept protection and fixation covers for the raspberry. (...)
+In the folder of the source code archive, you will find the \verb|rasp_prod| folder, containing the production source code for the raspberry device, the \verb|improc| and \verb|soundproc| folder containing our test codes for development, and the case folder containing some aborted concept protection and fixation covers for the raspberry.
 
+\subsection{Packaging}
+
+We used pi-gen to generated a Visuwalk flavoured Raspbian image, installing the needed packages and the source files, and running the software at startup. See \href{https://github.com/RPi-Distro/pi-gen}{by clicking on this}.
+
+\newpage
 \section{Conclusion}
 
 We achieved the main goal of this project : guiding a visually impaired person to follow a line. However, with more time on our hands, we could drastically improve this project.\\
@@ -152,10 +199,10 @@ Firstly, the handling of the device. We wanted to 3D print a PLA casing to put t
 \includegraphics[width=0.2\linewidth]{visuwalk_case2.png}
 \captionof{figure}{3D models for possible casing of the device}
 \end{center}
-Another major improvement is the sound of the instruction. As of now, it is functional, but not really nice to the ears. The objective would be to have a sound that is not too invasive and loud, but also gives accurate instructions.\\
+Another major improvement is the sound of the instruction. As of now, it is functional, but not really nice to the ears. The objective would be to have a sound that is not too invasive and loud, but also gives accurate instructions. 3D audio could also be considered, as it could take into account changes of the ground's height.\\
 And to give even more accurate instructions, we would also have to reduce the latency between the moment the frame is captured and the moment the sound is in the user's ears. To do so, we intended on launching the image processing part and the sound generation part asynchronously. This way, the two processes would communicate without having to wait for one another.\\
-Regarding the business strategy, we thought about putting our source code in open source, allowing everyone to copy it, tweak it and upgrade it to their needs. The benefits we would make from Visuwalk (if we were to be a company) would come from us providing technical support and repair services for the device, lenghtening its lifetime.Thus Visuwalk would be a project fitting in a circular economy dynamic.
-
+Regarding the business strategy, we thought about putting our source code in open source, allowing everyone to copy it, tweak it and upgrade it to their needs. The benefits we would make from Visuwalk (if we were to be a company) would come from us providing technical support and repair services for the device, lenghtening its lifetime.Thus Visuwalk would be a project fitting in a circular economy dynamic.\\
+Overall, this project was tough but rewarding. Learning how to use a Raspberry Pi and all that comes with it while working in a group of 5 people was challenging, but we still managed to complete the goal in the end, and are very proud of having presented this work to you.
 
 
 \end{document}
