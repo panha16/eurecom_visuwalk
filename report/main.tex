@@ -3,7 +3,8 @@
 \usepackage{tikz}
 \usepackage{wrapfig}
 \usepackage{caption}
-\title{Rapport UCL - Template} %Titre du fichier
+\usepackage{hyperref}
+\title{Rapport Visuwalk} %Titre du fichier
 
 \begin{document}
 
@@ -37,6 +38,7 @@ The tools we were given for project are a Raspberry Pi and its camera. The main 
 
 \section {User manual}
 
+In order to use our software on your own device, just flash the Visuwalk flavoured Raspbian image from our \href{https://gitlab.eurecom.fr/algh2/visuwalk}{Gitlab page}, onto your SD Card. However, if you have got some issues, or an existing installation that you don't want to mess up, make sure you have the \verb|python3-numpy|, \verb|python3-pyaudio|, \verb|python3-opencv| and \verb|python3-picamera| installed on your device, copy the Python scripts that are in the \verb|rasp_prod/| folder of our repository, and execute \verb|main.py|.
 
 \section{Technical manual}
 
@@ -53,7 +55,7 @@ Concerning Matlab and Simulink, some of us had already used these softwares, but
 The option of using Python showed up because other groups had issues just like us and switched to Python. Thus, we talked about the switch, and decided not to switch completely as we had already advanced on the Matlab code. Instead, we let Guillaume,in parallel, try to do the video processing part (that was done on Matlab) on Python, to see how easier (or harder) it would be.\\
 It was much easier and produced better results.And so we were left with one last question : should we also do the sound generation part on Python ?
 We were quite reluctant at first, given that almost the whole code was already done in Simulink and that switching and translating it all would take an important amount of time. Besides, we searched and found multiple ways to make a bridge between Python and Simulink. But time was ticking and we still had not found a way to make any of these bridges work correctly, so we made the switch. And it did not take as long as we expected, despite the issues we encountered. \\
-Still, we found some interesting features like the C code generation, which would be used to embed the program on a portable system. Knowing that shared memory in C is possible and probably easier than in Matlab, we searched for a way to use shared memory in Python, and to manually modify the C generated code to implement the share of memory between the sound generation part and the Python video processing, so that the second could indicate the direction to the first.\\
+Still, we found some interesting features like the C code generation in Matlab/Simulink, which would be used to embed the program on a portable system. Knowing that shared memory in C is possible and probably easier than in Matlab, we searched for a way to use shared memory in Python, and to manually modify the C generated code to implement the share of memory between the sound generation part and the Python video processing, so that the second could indicate the direction to the first.\\
 \subsection{Image processing}
 \vspace{3mm}
 \begin{flushleft}
@@ -141,7 +143,11 @@ Before sending \(\gamma\) to the sound generation module, we bound the value of 
 
 \subsection{Description of source files directory}
 
-In the folder of the source code archive, you will find the \verb|rasp_prod| folder, containing the production source code for the raspberry device, the \verb|improc| and \verb|soundproc| folder containing our test codes for development, and the case folder containing some aborted concept protection and fixation covers for the raspberry. (...)
+In the folder of the source code archive, you will find the \verb|rasp_prod| folder, containing the production source code for the raspberry device, the \verb|improc| and \verb|soundproc| folder containing our test codes for development, and the case folder containing some aborted concept protection and fixation covers for the raspberry.
+
+\subsection{Packaging}
+
+We used pi-gen to generated a Visuwalk flavoured Raspbian image, installing the needed packages and the source files, and running the software at startup. See \href{https://github.com/RPi-Distro/pi-gen}{this}.
 
 \section{Conclusion}
 
