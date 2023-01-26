@@ -24,7 +24,7 @@ def generate_audio(gamma):
             f = 3.8*abs(angle)+ 230
             samples = A*(np.sin(2*np.pi*array*f/sample_rate)).astype(np.float32)
 
-            if abs(angle) < 4: # small angle : sound in both ears
+            if abs(angle) < 3: # small angle : sound in both ears
                 A = 0.03
                 f = 230
                 samples = A*(np.sin(2*np.pi*array*f/sample_rate)).astype(np.float32)
@@ -36,7 +36,7 @@ def generate_audio(gamma):
                 stereo_samples = np.column_stack((samples, zero))
 
             stream.write(stereo_samples.tobytes())
-        time.sleep(0.5)
+        time.sleep(0.6)
 
     stream.stop_stream()
     stream.close()

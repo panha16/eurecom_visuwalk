@@ -64,7 +64,7 @@ def get_angle(gamma):
     camera.framerate = 30
     rawCapture = PiRGBArray(camera,size = (height,width))
 
-    avg_gamma = create_queue(6)
+    avg_gamma = create_queue(3)
 
     for frame in camera.capture_continuous(rawCapture,format = "bgr",use_video_port = True):
         frame = frame.array
@@ -128,7 +128,8 @@ def get_angle(gamma):
 
             add_element(frame_gamma, avg_gamma)
             gamma.value = avg_queue(avg_gamma)
-            print(avg_queue(avg_gamma))
+            print("frame gamma = ", frame_gamma)
+            print("gamma = ", avg_queue(avg_gamma))
 
         else:
             print("no lines detected in frame !!!")
