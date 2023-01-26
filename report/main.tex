@@ -97,7 +97,7 @@ After having a clear image of the line, we apply the Hough transform which will 
 \captionof{figure}{popo}
 \end{center}
 Afterwards, we consider only the bottom of the frame and we compute the \textit{oriented} angle of each vector \(v_i\) with the \(y\) axis (defined as the \(\alpha\) angle), using:
-\[ {\alpha}_i = \text{sgn}(x) \text{arcos}\left(\frac{y_i}{\|v_i\|}\right) \]
+\[ {\alpha}_i = \text{sign}(x) \text{arcos}\left(\frac{y_i}{\|v_i\|}\right) \]
 This angle is effectively the one that has our interest, since it is the same if we flip the vectors in the other direction along the \(y\) axis.
 Then we calculate the average of the \(\alpha_i\) angles, which gives us our final \(\alpha\).\\
 In the case the user is not on the line, we had the following strategy to get him back to it: we calculate the angle between the user and a target zone of the line where we want the person to go. As the evaluation is a race, and as a failure could not worsen anything by itself (we count the number of failures and not their durations), we put the target zone a little bit ahead of the line, so that the user gets back to it quickly. This angle has been called the \(\beta\) angle.\\
