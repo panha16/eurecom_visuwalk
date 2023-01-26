@@ -21,7 +21,7 @@
 %\setlength{\headheight}{2cm}
 \RequirePackage{url}
 \RequirePackage[hidelinks]{hyperref}%Paquet pour insérer légendes dans des sous-figures comme Figure 1a, 1b
-\RequirePackage[left=2.5cm,right=2.5cm,top=2cm,bottom=3.5cm]{geometry} %Configuration de la page
+\RequirePackage[left=2.5cm,right=2.5cm,top=2cm,bottom=3.8cm]{geometry} %Configuration de la page
 
 
 %-------------------- Informations sur le rapport ----------------------
@@ -40,7 +40,7 @@
 \lhead{\includegraphics[scale=0.15]{Eurecom.png}} %Affichage de l'image au top de la page
 \rhead{\nouppercase{\leftmark}}
 \rfoot{\thepage}
-\cfoot{\textbf{\titre}}
+\cfoot{\textbf{S5 PROJECT REPORT :\\VISUWALK}}
 \lfoot{\cours}
 }
 
@@ -69,9 +69,9 @@
 
     \begin{minipage}{0.9\textwidth}
     \begin{center}
-    \large Alexandre Avy, Hichem Khettab, Lou Marze, Hamza Parnica, Guillaume Ung \\
+    \large Group 2 (A) :\\Alexandre Avy, Hichem Khettab, Lou Marze, Hamza Parnica, Guillaume Ung \\
     \vspace{1.5cm}
-    Supervisors : Renaud Pacalet, Chiara Gialdi \\
+    Supervisors : Renaud Pacalet, Chiara Gialdi, Massimiliano Todisco \\
     \vspace{0.5cm}
     Tutor : Navid Nikaein
     \end{center}
