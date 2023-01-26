@@ -28,11 +28,12 @@
 %------------ Corps du rapport ----------------
 \section{Abstract}
 
-For this semester project, to aid the 2.2 billion visually impaired persons in the world, we were asked to develop a system capable of guiding the latter following a line.\\
-The tools we were given are a Raspberry Pi and its camera. The main goals of this project are the following :\\
-detect the line from the Raspberry Pi’s camera\\
-process the information given by the line\\
-generate sound cues to guide the user
+
+For this semester project, to aid the 2.2 billion visually impaired persons in the world, we were asked to develop a system capable of guiding the latter following a line.\\ Despite the access to multiple technologies capable of helping them navigate, they are for the most part not fit for sports. The most popular solution being the white cane : it is very efficient but not so practical, as it needs a lot of practice to use it and prevents you from using both of your arms/hands if you want to do something.\\For this purpose, we developed Visuwalk for this semester project, a device able to guide you in following a line through audio feedback.\\
+The tools we were given for project are a Raspberry Pi and its camera. The main goals of this project are the following :\\
+- Detecting the line from the Raspberry Pi’s camera\\
+- Process the information given by the line\\
+- Generate sound cues to guide the user
 
 \section {User manual}
 
@@ -52,10 +53,17 @@ Concerning Matlab and Simulink, some of us had already used these softwares, but
 The option of using Python showed up because other groups had issues just like us and switched to Python. Thus, we talked about the switch, and decided not to switch completely as we had already advanced on the Matlab code. Instead, we let Guillaume,in parallel, try to do the video processing part (that was done on Matlab) on Python, to see how easier (or harder) it would be.\\
 It was much easier and produced better results.And so we were left with one last question : should we also do the sound generation part on Python ?
 We were quite reluctant at first, given that almost the whole code was already done in Simulink and that switching and translating it all would take an important amount of time. Besides, we searched and found multiple ways to make a bridge between Python and Simulink. But time was ticking and we still had not found a way to make any of these bridges work correctly, so we made the switch. And it did not take as long as we expected, despite the issues we encountered. \\
-Still, we found some interesting features like the C code generation, which would be used to embed the program on a portable system. Knowing that shared memory in C is possible and probably easier than in Matlab, we searched for a way to use shared memory in Python, and to manually modify the C generated code to implement the share of memory between the sound generation part and the Python video processing, so that the second could indicate the direction to the first.
-
-\subsection{Image processing part}
-
+Still, we found some interesting features like the C code generation, which would be used to embed the program on a portable system. Knowing that shared memory in C is possible and probably easier than in Matlab, we searched for a way to use shared memory in Python, and to manually modify the C generated code to implement the share of memory between the sound generation part and the Python video processing, so that the second could indicate the direction to the first.\\
+\subsection{Image processing}
+\vspace{3mm}
+\begin{flushleft}
+    \textbf{\large{First discarded idea}}
+\end{flushleft}
+The first idea we had was to horizontally cut the frame in 2 and process each of them.\\On the upper frame, we would calculate the angle between the middle of the frame and the detected line. On the bottom frame, we would calculate the distance between the detected line and the middle of the frame and this distance would tell us whether the user was standing on the right, left or directly on the line.\\ However, we discarded this idea as the calculation of both the angle and distance were not accurate and neither was the instruction. Indeed, rather than taking the fastest path, it would force the user to always stay on the line, leading to weird routes and sharp turns.
+So we changed our approach to the one explained in the following paragraph.
+\begin{flushleft}
+    \textbf{\large{Final approach for the image processing part}}
+\end{flushleft}
 The first step toward computing the image and giving an angle is the image acquisition. We use the python library \verb|picamera| in order to get the camera's images, at a quite low quality, because it has proven to be more time-efficient.\\
 \begin{center}
 \begin{tikzpicture}[scale=3]
@@ -137,9 +145,17 @@ In the folder of the source code archive, you will find the \verb|rasp_prod| fol
 
 \section{Conclusion}
 
-We achieved the main goals of this project. Our system is simple to use and is able to detect the guideline, to calculate the position of the customer relatively to the guideline. and to guide efficiently the person equipped with it through the course. \\
-We still can make some improvements to our system. Firstly we thought it was important for the customer to be able to have means to maintain the system stable . It will make the experience of the customer more comfortable and will optimize the performance of our system. We thought about modeling a 3D printed PLA case that the customer could put easily on his belt so he can run without thinking about his device; but more specifically, that would have fixed the camera orientation, which is good as it is quite an important parameter in the software. We can also produce a nicer sound. Indeed the customer will have our sound continuously in his ears during his running session so it needs to be as pleasant as possible to hear. \\
-To reduce the ecological impact of our systems and to make it more accessible to everyone we thought about putting our source code in open source so that everyone can reproduce it. Doing this we will also reduce the carbon footprint of our product since we will less use transport means to sell Visuwalk all around the world. As a company we will still make benefits by providing technical support to people who want to implement the device by themselves. Moreover we will also provide a repair service to lengthen the lifetime of the devices using Visuwalk. Thus Visuwalk will be a project which will fit in a circular economy dynamic.
+We achieved the main goal of this project : guiding a visually impaired person to follow a line. However, with more time on our hands, we could drastically improve this project.\\
+Firstly, the handling of the device. We wanted to 3D print a PLA casing to put the device in, so that the user could wear it on his belt and move freely, without having to hold the Raspberry Pi. Not only would it be more practical, it would also improve the performance of the system by fixing the camera orientation and angle relative to the ground, allowing us to fine tune parameters in the code.\\
+\begin{center}
+\includegraphics[width=0.2\linewidth]{visuwalk_case1.png}
+\includegraphics[width=0.2\linewidth]{visuwalk_case2.png}
+\captionof{figure}{3D models for possible casing of the device}
+\end{center}
+Another major improvement is the sound of the instruction. As of now, it is functional, but not really nice to the ears. The objective would be to have a sound that is not too invasive and loud, but also gives accurate instructions.\\
+And to give even more accurate instructions, we would also have to reduce the latency between the moment the frame is captured and the moment the sound is in the user's ears. To do so, we intended on launching the image processing part and the sound generation part asynchronously. This way, the two processes would communicate without having to wait for one another.\\
+Regarding the business strategy, we thought about putting our source code in open source, allowing everyone to copy it, tweak it and upgrade it to their needs. The benefits we would make from Visuwalk (if we were to be a company) would come from us providing technical support and repair services for the device, lenghtening its lifetime.Thus Visuwalk would be a project fitting in a circular economy dynamic.
+
 
 
 \end{document}
