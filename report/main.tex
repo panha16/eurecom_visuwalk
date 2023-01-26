@@ -80,6 +80,7 @@ We then apply a bilateral filter to the image, as it is a filter that preserve t
 After having a clear image of the line, we apply the Hough transform which will give us a set of straight lines detected on the image. But before calculating any angle, we need to reorient the lines accordingly to our purpose. Indeed, openCV will return us vectors that are oriented towards increasing \(x\), but we need to have them all in the same directon as \(y\), because the user moves on the y axis.
 
 % place le ou tu veux comme tu veux Gui
+\begin{center}
 \begin{tikzpicture}[scale=2]
   \draw[-latex] (0,-0.6) -- (0,-1.6);
   \draw (0,-1.6) node[below] {\(y\)};
